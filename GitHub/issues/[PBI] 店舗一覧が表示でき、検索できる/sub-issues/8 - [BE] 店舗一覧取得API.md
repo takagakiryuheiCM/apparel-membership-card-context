@@ -1,36 +1,67 @@
 # [BE] 店舗一覧取得API
 
-## Issue情報
-- **Issue番号**: #11
-- **ステータス**: ✅ Done
-- **ラベル**: backend
-- **親Issue**: #2 [PBI] 店舗一覧が表示でき、検索できる
-- **担当者**: @takahashi
+## 目的
+店舗一覧画面に表示するための店舗情報を取得するAPIを提供する。
 
-## 概要
+## 対象（このAPIが満たすこと）
+- DynamoDBのShopsテーブルから有効な店舗を取得する
+- 店舗名でのキーワード検索に対応する
+- エリアでの絞り込みに対応する
+- 表示順（sort_order）でソートして返却する
 
-店舗一覧を取得するAPIを実装する。
+## DynamoDB設計
 
-## タスク
+### テーブル定義
+詳細は [DB設計](https://github.com/takagakiryuheiCM/apparel-membership-card/wiki/DB設計) を参照。
 
-- [x] `GET /api/shops` エンドポイントの実装
-- [x] Shopsテーブルからの取得処理（Scan）
-- [x] isActive=true のフィルタリング
-- [x] ソート処理（sort_order順）
-- [x] ユニットテストの作成
+| 項目 | 値 |
+|------|-----|
+| テーブル名 | `Shops` |
+| パーティションキー（PK） | `shopCode`（String） |
+| ソートキー（SK） | なし |
 
-## 実装詳細
+### 属性（本API関連）
+| 属性名 | 型 | 必須 | 説明 |
+|--------|-----|:----:|------|
+| shopCode | String | ○ | 店舗コード（PK） |
+| shopName | String | ○ | 店舗名 |
+| shopNameKana | String | ○ | 店舗名（カナ） |
+| postalCode | String | ○ | 郵便番号 |
+| prefecture | String | ○ | 都道府県 |
+| address | String | ○ | 住所 |
+| phoneNumber | String | ○ | 電話番号 |
+| businessHours | String | ○ | 営業時間 |
+| isActive | Boolean | ○ | 有効フラグ |
+| areaName | String | ○ | エリア名 |
+| sortOrder | Number | ○ | 表示順 |
 
-### エンドポイント
+### アクセスパターン
+| パターン | 操作 | キー条件 |
+|----------|------|----------|
+| 店舗一覧取得 | Scan | isActive = true |
+| 店舗詳細取得 | GetItem | PK = shopCode |
+
+## エンドポイント
 `GET /api/shops`
+
+## リクエスト
+
+### Headers
+| ヘッダー名 | 必須 | 説明 |
+|------------|:----:|------|
+| Authorization | ○ | Bearer {LINEアクセストークン} |
 
 ### クエリパラメータ
 | パラメータ | 必須 | 説明 |
-|-----------|------|------|
+|-----------|:----:|------|
 | keyword | - | 店舗名での検索キーワード |
 | area | - | エリアでの絞り込み |
 
-### レスポンス
+## レスポンス
+
+### 200 OK
+成功時。
+
 ```json
 {
   "shops": [
@@ -50,8 +81,40 @@
 }
 ```
 
-## 関連PR
-- #20 feat: 店舗一覧取得API実装
+## 関連ドキュメント
+- [DB設計（wiki）](https://github.com/takagakiryuheiCM/apparel-membership-card/wiki/DB設計)
+- [API設計（wiki）](https://github.com/takagakiryuheiCM/apparel-membership-card/wiki/API設計)
+- [店舗マスター項目](Backlog/documents/店舗マスター項目.md)
 
-## 完了日
-2025/12/25
+## タスク
+- [ ] API実装
+  - [ ] ルーティング実装（`GET /api/shops`）
+  - [ ] Shopsテーブルからの取得処理（Scan）
+  - [ ] isActive=true のフィルタリング
+  - [ ] キーワード検索処理
+  - [ ] エリア絞り込み処理
+  - [ ] ソート処理（sort_order順）
+  - [ ] レスポンス整形
+- [ ] テスト実装
+  - [ ] ユニットテスト
+  - [ ] 結合テスト
+
+## テストケース
+
+### 正常系
+- [ ] 店舗一覧が取得できる
+- [ ] キーワード検索で店舗名に部分一致する店舗が取得できる
+- [ ] エリア絞り込みで該当エリアの店舗のみ取得できる
+- [ ] sort_order順でソートされて返却される
+- [ ] isActive=false の店舗は返却されない
+
+### 異常系
+- [ ] 認証に失敗した場合、401エラーが返る
+
+## 完了条件
+- [ ] 上記タスクが完了していること
+- [ ] テストケースがすべて満たされること
+- [ ] レビューが承認されていること
+
+## Blocked by
+- [ ] 店舗マスタCSV取り込み機能
