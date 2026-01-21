@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "issue:update": "./sync-github-issues.sh --repo takagakiryuheiCM/apparel-membership-card",
+    "issue:update": "./sync-github-issues.sh --repo example-corp/apparel-membership-card",
     "backlog:update": "pnpm dlx backlog-exporter@latest update --force",
     "rulesync:generate": "pnpm dlx rulesync@latest generate"
   }
