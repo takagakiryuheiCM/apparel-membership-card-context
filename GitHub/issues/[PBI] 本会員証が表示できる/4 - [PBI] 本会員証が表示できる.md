@@ -1,9 +1,8 @@
 # [PBI] 本会員証が表示できる
 
 ## Issue情報
-- **Issue番号**: #23
 - **ステータス**: 🔄 In Progress
-- **ラベル**: PBI, enhancement
+- **ラベル**: product backlog
 - **マイルストーン**: Sprint 3
 - **担当者**: @suzuki
 
@@ -31,13 +30,6 @@
 
 ### 画面
 - 本会員証表示画面（/membership-card/{cardId}）
-
-## 子Issue
-
-| Issue | タイトル | ステータス |
-|-------|----------|------------|
-| #24 | [BE] 会員証詳細取得API（ポイント連携） | ✅ Done |
-| #25 | [FE] 本会員証表示画面 | 🔄 In Progress |
 
 ## 備考
 - ポイント取得はPOS様APIをリアルタイム呼び出し
