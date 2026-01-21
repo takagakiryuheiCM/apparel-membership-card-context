@@ -129,9 +129,25 @@ extract_child_issue_numbers() {
     echo "$numbers"
 }
 
-# 出力ディレクトリを作成（既存の内容をクリア）
-rm -rf "${OUTPUT_DIR:?}"
-mkdir -p "$OUTPUT_DIR"
+# 出力ディレクトリを作成（既存の内容をクリア、templateは保持）
+if [[ -d "$OUTPUT_DIR" ]]; then
+    # templateフォルダを一時退避
+    if [[ -d "$OUTPUT_DIR/template" ]]; then
+        TEMPLATE_BACKUP=$(mktemp -d)
+        cp -r "$OUTPUT_DIR/template" "$TEMPLATE_BACKUP/"
+    fi
+    
+    rm -rf "${OUTPUT_DIR:?}"
+    mkdir -p "$OUTPUT_DIR"
+    
+    # templateフォルダを復元
+    if [[ -d "$TEMPLATE_BACKUP/template" ]]; then
+        mv "$TEMPLATE_BACKUP/template" "$OUTPUT_DIR/"
+        rm -rf "$TEMPLATE_BACKUP"
+    fi
+else
+    mkdir -p "$OUTPUT_DIR"
+fi
 
 # 一時ファイル
 TEMP_DIR=$(mktemp -d)
